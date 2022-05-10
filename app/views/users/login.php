@@ -12,11 +12,11 @@
     <div class="wrapper-login">
         <h2>Sign in</h2>
         <form action="<?= URLROOT ?>/users/login" method="POST">
-            <input type="text" placeholder="Username" name="username">
+            <input type="text" placeholder="Username" name="username" autocomplete="username">
             <span class="invalidFeedback">
                 <?= $data['usernameError'] ?>
             </span>
-            <input type="password" placeholder="Password" name="password">
+            <input type="password" placeholder="Password" name="password" autocomplete="current-password">
             <span class="invalidFeedback">
                 <?= $data['passwordError'] ?>
             </span>
