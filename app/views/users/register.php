@@ -24,14 +24,14 @@
                 <?= $data['emailError'] ?>
             </span>
 
-            <input type="password" placeholder="Confirm password" name="confirmPassword">
-            <span class="invalidFeedback">
-                <?= $data['confirmPasswordError'] ?>
-            </span>
-
             <input type="password" placeholder="Password" name="password">
             <span class="invalidFeedback">
                 <?= $data['passwordError'] ?>
+            </span>
+
+            <input type="password" placeholder="Confirm password" name="confirmPassword">
+            <span class="invalidFeedback">
+                <?= $data['confirmPasswordError'] ?>
             </span>
 
             <button id="submit" type="submit" value="Submit">Submit</button>

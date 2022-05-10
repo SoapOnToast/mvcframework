@@ -3,6 +3,8 @@ class Users extends Controller {
     
     public function __construct() {
         $this->userModel = $this->model('User');
+        $this->config = HTMLPurifier_Config::createDefault();
+        $this->purifier = new HTMLPurifier($this->config);
     }
 
     public function register() {
@@ -19,10 +21,12 @@ class Users extends Controller {
         ];
 
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+            
             //Sanitize post data
+            array_map([$this->purifier,'purify'],$_POST);
 
-            //TODO change string filter
-            $_POST = filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING);
+            // $_POST = filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING);
+            // var_dump($_POST);
         
             $data = [
                 'username' => trim($_POST['username']),
@@ -40,26 +44,26 @@ class Users extends Controller {
 
             //Validate username on letters and numbers
             if (empty($data['username'])) {
-                $data['usernameError'] = 'Please enter a valid username';
+                $data['usernameError'] = 'Please enter a valid username.';
             } elseif (!preg_match($nameValidation,$data['username'])) {
-                $data['usernameError'] = 'Username can only contain letters and numbers';
+                $data['usernameError'] = 'Username can only contain letters and numbers.';
+            } elseif ($this->userModel->findUserByUsername($data['username'])) {
+                $data['usernameError'] = 'Username is already taken.';
             }
 
             if (empty($data['email'])) {
-                $data['emailError'] = 'Please enter a valid email address';
+                $data['emailError'] = 'Please enter a valid email address.';
             } elseif (!filter_var($data['email'], FILTER_VALIDATE_EMAIL)) {
-                $data['emailError'] = 'Please enter the correct format';
-            } else {
-                if ($this->userModel->findUserByEmail($data['email'])) {
-                    $data['emailError'] = 'Email is already taken';
-                }
+                $data['emailError'] = 'Please enter the correct format.';
+            } elseif ($this->userModel->findUserByEmail($data['email'])) {
+                $data['emailError'] = 'Email is already in use.';
             }
 
             //Validate password on length and numeric values.
             if (empty($data['password'])) {
                 $data['passwordError'] = 'Please enter password.';
             } elseif (strlen($data['password']) < 6) {
-                $data['passwordError'] = 'Password must be at least 6 characters';
+                $data['passwordError'] = 'Password must be at least 6 characters.';
             } elseif (preg_match($passwordValidation,$data['password'])) {
                 $data['passwordError'] = 'Password must have at least one numeric value.';
             }
@@ -73,7 +77,7 @@ class Users extends Controller {
                 }
             }
             // Make sure that errors are empty
-            if (empty($data['confirmPasswordError']) && empty($data['usernameError']) && empty($data['passwordError'])) {
+            if (empty($data['confirmPasswordError']) && empty($data['usernameError']) && empty($data['passwordError']) && empty($data['emailError'])) {
                 // Hash password
                 $data['password'] = password_hash($data['password'],PASSWORD_DEFAULT);
 
@@ -102,7 +106,7 @@ class Users extends Controller {
 
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             // Sanitize post data
-            $_POST = filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING); //! this is depreciated, fix it 
+            array_map([$this->purifier,'purify'],$_POST);
 
             $data = [
                 'title' =>'Login page',

@@ -27,7 +27,7 @@
 
         $row = $this->db->single();
 
-        $hashedPassword = $row->password;
+        @$hashedPassword = $row->password;
 
         if (password_verify($password, $hashedPassword)) {
             return $row;
@@ -43,6 +43,20 @@
 
         //Email is binded by the email variable.
         $this->db->bind(':email',$email);
+
+        //Check if email is already registered
+        if ($this->db->rowCount() > 0) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+    public function findUserByUsername($username) {
+        //Prepared statement.
+        $this->db->query("SELECT * FROM users WHERE username = :username");
+
+        //Email is binded by the email variable.
+        $this->db->bind(':username',$username);
 
         //Check if email is already registered
         if ($this->db->rowCount() > 0) {
