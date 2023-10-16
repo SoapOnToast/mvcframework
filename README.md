@@ -1,3 +1,3 @@
 # mvcframework
 
-do email stuff
+OOP PHP MVC framework created for VCE software development
